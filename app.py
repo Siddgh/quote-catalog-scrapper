@@ -8,6 +8,7 @@ from urllib.request import urlopen as uOpen
 from utils import string_utils
 from utils import crawler_utils
 
+
 current_year = datetime.datetime.now().year
 current_date = str(datetime.date.today())
 formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
@@ -23,7 +24,8 @@ def setup_logger(log_filename, log_name, level=logging.INFO):
 
 
 def create_csv_header():
-    logger.info("----------------------- Starting CSV File Check -----------------------")
+    logger.info(
+        "----------------------- Starting CSV File Check -----------------------")
     if not csv_utils.check_if_csv_header_already_exists(name_constants.csv_file_name):
         header_data = write_to_csv_model.CSVWriterModel(year=name_constants.year, movie=name_constants.movie,
                                                         quote=name_constants.quote, author=name_constants.author,
@@ -32,7 +34,8 @@ def create_csv_header():
         logger.info("CSV File Created with Header")
     else:
         logger.info("CSV File Already Exists")
-    logger.info("----------------------- CSV File Check Complete -----------------------\n")
+    logger.info(
+        "----------------------- CSV File Check Complete -----------------------\n")
 
 
 def fetch_movie_quotes_details(uMovieDetail):
@@ -46,27 +49,34 @@ def fetch_movie_quotes_details(uMovieDetail):
 
 if __name__ == '__main__':
 
-    logger = setup_logger(name_constants.log_file_name + current_date + ".log", 'logger')
-    success_logger = setup_logger(name_constants.success_logs + current_date + ".log", 'success')
-    exists_logger = setup_logger(name_constants.existing_logs + current_date + ".log", 'exists')
+    logger = setup_logger(name_constants.log_file_name +
+                          current_date + ".log", 'logger')
+    success_logger = setup_logger(
+        name_constants.success_logs + current_date + ".log", 'success')
+    exists_logger = setup_logger(
+        name_constants.existing_logs + current_date + ".log", 'exists')
 
     create_csv_header()
     for index in reversed(range(name_constants.movies_year_limit, 2004)):
         year = str(index)
-        logger.info("----------------------- Fetching URL for Year -----------------------")
+        logger.info(
+            "----------------------- Fetching URL for Year -----------------------")
         year_url = string_utils.get_year_url(year)
         logger.info("URL --> " + year_url)
         logger.info("Year --> " + year)
         uClient = uOpen(year_url)
         movie_ids = crawler_utils.grab_movie_ids(uClient.read(), logger)
         logger.info("Movie Id's found --> " + ",".join(movie_ids))
-        logger.info("----------------------- Fetching URL for Year Complete -----------------------\n")
+        logger.info(
+            "----------------------- Fetching URL for Year Complete -----------------------\n")
         for movie_id in movie_ids:
             movie_url = string_utils.get_movie_url(movie_id)
             uMovieDetail = uOpen(movie_url).read()
             movie_name = crawler_utils.grab_movie_name(uMovieDetail)
-            logger.info("----------------------- Writing Quotes for Movie " + movie_name + " -----------------------")
-            year, movie, quotes, authors, tags = fetch_movie_quotes_details(uMovieDetail)
+            logger.info("----------------------- Writing Quotes for Movie " +
+                        movie_name + " -----------------------")
+            year, movie, quotes, authors, tags = fetch_movie_quotes_details(
+                uMovieDetail)
             for numberOfQuotes in range(len(quotes)):
                 quote = quotes[numberOfQuotes]
                 author = authors[numberOfQuotes]
@@ -76,4 +86,3 @@ if __name__ == '__main__':
                                                             exists_logger=exists_logger)
             logger.info(
                 "----------------------- Writing Quotes for Movie " + movie_name + " Complete -----------------------\n")
-
